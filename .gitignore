@@ -40,4 +40,6 @@ platform/libplat/demo/vpss_demo/mask_demo/ak_mask_demo
 platform/libplat/demo/vpss_demo/md_demo/ak_vpss_md_demo
 platform/libplat/demo/vpss_demo/od_demo/ak_od_demo
 platform/rootfs/root.sqsh4
+platform/apps/product_test/output/product_test
+tools/burntool/uImage
 
