@@ -42,4 +42,7 @@ platform/libplat/demo/vpss_demo/od_demo/ak_od_demo
 platform/rootfs/root.sqsh4
 platform/apps/product_test/output/product_test
 tools/burntool/uImage
-
+tools/burntool/Lang/
+tools/burntool/root.sqsh4
+tools/burntool/usr.jffs2
+tools/burntool/usr.sqsh4

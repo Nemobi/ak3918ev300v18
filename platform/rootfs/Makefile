@@ -33,6 +33,7 @@ image:
 	@echo "\033[1;31m"'building root.sqsh4 usr.sqsh4 file system ...'"\033[m"
 	@rm -f usr.sqsh4 root.sqsh4
 	@$(BUILD_SQAUSHFS)
+	cp -f root.sqsh4 usr.jffs2 usr.sqsh4 $(shell pwd)/../../tools/burntool/
 
 install: extract.sh rootfs.tar.gz
 	@echo "CONFIG_DANA_SUPPORT=$(CONFIG_DANA_SUPPORT)"
