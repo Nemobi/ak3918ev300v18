@@ -3,7 +3,14 @@ TARGET_DIR := $(CUR_DIR)/output/
 export TARGET_DIR
 
 AKIPC_INNER_INC := $(CUR_DIR)/include
+ifeq ($(CONFIG_TUYA_SUPPORT), y)
+AKIPC_INNER_INC += $(CUR_DIR)/tuya/include	
+endif
 CFLAGS += $(addprefix -I,$(AKIPC_INNER_INC))
+
+ifeq ($(CONFIG_TUYA_SUPPORT), y)
+CFLAGS += -DCONFIG_TUYA_SUPPORT=1
+endif
 
 dir_y := main
 dir_y += misc
@@ -19,6 +26,12 @@ ifeq ($(CONFIG_DANA_SUPPORT), y)
 	dir_y += dana
 	DANA_LIB_DIR := $(CUR_DIR)/dana/lib
 	export DANA_LIB_DIR
+endif
+
+ifeq ($(CONFIG_TUYA_SUPPORT), y)
+	dir_y += tuya
+	TUYA_LIB_DIR := $(CUR_DIR)/tuya/lib
+	export TUYA_LIB_DIR
 endif
 
 dir_y += monitor

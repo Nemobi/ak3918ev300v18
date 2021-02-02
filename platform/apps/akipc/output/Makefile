@@ -42,7 +42,13 @@ ifeq ($(CONFIG_ONVIF_SUPPORT), y)
 		APP_STATIC_LIB += app_onvif
 	endif
 endif
-
+ifeq ($(CONFIG_TUYA_SUPPORT), y)
+        LOCAL_SHARED_LIB += pthread
+		TUYA_STATIC_LIB += tuya_ipc mbedtls
+        LOCAL_LDFLAGS += -L$(TUYA_LIB_DIR) -L$(APP_LIB_DIR)
+		
+endif
+APP_STATIC_LIB +=  zbar
 # appointed link lib
 LIBS := $(addprefix $(PLAT_LIB_DIR)/,$(patsubst %,lib%.a,$(PLAT_STATIC_LIB)))
 LIBS += $(addprefix $(MPI_LIB_DIR)/,$(patsubst %,lib%.a,$(MPI_STATIC_LIB)))
@@ -55,6 +61,10 @@ endif
 ifeq ($(CONFIG_ONVIF_SUPPORT), y)
     ONVIF_LIBS:= base NkUtils onvif rtsp NkCipher NkEmbedded NkN1SDK
 	LIBS += $(addprefix $(ONVIF_LIB_DIR)/,$(patsubst %,lib%.a,$(ONVIF_LIBS)))
+endif
+
+ifeq ($(CONFIG_TUYA_SUPPORT), y)
+        LIBS += $(addprefix $(TUYA_LIB_DIR)/,$(patsubst %,lib%.a,$(TUYA_STATIC_LIB)))
 endif
 
 LDFLAGS := $(LOCAL_LDFLAGS)

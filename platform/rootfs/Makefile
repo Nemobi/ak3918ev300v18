@@ -36,6 +36,7 @@ image:
 	cp -f root.sqsh4 usr.jffs2 usr.sqsh4 $(shell pwd)/../../tools/burntool/
 
 install: extract.sh rootfs.tar.gz
+	@echo "CONFIG_TUYA_SUPPORT=$(CONFIG_TUYA_SUPPORT)"
 	@echo "CONFIG_DANA_SUPPORT=$(CONFIG_DANA_SUPPORT)"
 	@echo "CONFIG_RTSP_SUPPORT=$(CONFIG_RTSP_SUPPORT)"
 	@echo "CONFIG_UTILS_SUPPORT=$(CONFIG_UTILS_SUPPORT)"

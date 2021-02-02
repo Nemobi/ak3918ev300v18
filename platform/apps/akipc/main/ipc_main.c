@@ -44,6 +44,9 @@
 #include "ak_config.h"
 #endif
 
+#ifdef CONFIG_TUYA_SUPPORT
+#include "tuya.h"
+#endif
 /* anyka_ipc platform version */
 #define AK_VERSION_SOFTWARE             "V1.0.43"
 
@@ -68,8 +71,9 @@ const char* ak_ipc_get_version(void)
 #ifndef CONFIG_ONVIF_SUPPORT
 static void exit_other_platform(void)
 {
+#ifndef CONFIG_TUYA_SUPPORT
 	struct sys_cloud_config *cloud = ak_config_get_sys_cloud();
-
+#endif
 #ifdef CONFIG_RTSP_SUPPORT
 	if(cloud->rtsp) {
 		ak_rtsp_stop(0);
@@ -657,6 +661,11 @@ static void init_other_platform(void)
 #ifdef CONFIG_DANA_SUPPORT
 	if(cloud->dana){
 		ak_dana_init(vi_handle, ai_handle, ao_handle);
+	}
+#endif
+#ifdef CONFIG_TUYA_SUPPORT
+	if(cloud->tuya){
+		tuya_init();
 	}
 #endif
 

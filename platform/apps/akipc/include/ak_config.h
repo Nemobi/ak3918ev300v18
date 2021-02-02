@@ -164,6 +164,7 @@ struct sys_alarm_config {
 struct sys_cloud_config {
 	int dana;
 	int rtsp;
+	int tuya;
 };
 
 enum wifi_enc_type {

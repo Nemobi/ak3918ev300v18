@@ -1,7 +1,8 @@
 # cloud platform or protocol config
-CONFIG_DANA_SUPPORT = y
+CONFIG_DANA_SUPPORT = n
 CONFIG_RTSP_SUPPORT = n
 CONFIG_ONVIF_SUPPORT = n
+CONFIG_TUYA_SUPPORT = y
 
 # WIFI support config
 CONFIG_WIFI_RTL8188EUS = n
