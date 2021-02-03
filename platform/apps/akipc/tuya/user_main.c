@@ -18,11 +18,11 @@
 #define IPC_APP_STORAGE_PATH    "/etc/jffs2/"   //涂鸦SDK内部配置文件存放路径，要求可读写，掉电不丢失 
 #define IPC_APP_UPGRADE_FILE    "/tmp/upgrade.file" //File with path to download file during OTA
 #define IPC_APP_SD_BASE_PATH    "/mnt/sdcard/"      //SD card mount directory
-#define IPC_APP_PID             "gpkguYNp7yI4k413"  //Product ID of TUYA device, this is for demo only.
+#define IPC_APP_PID             "qqobnsd9eawddwvs"  //Product ID of TUYA device, this is for demo only.
                                                      //Contact tuya PM/BD for official pid.
-#define IPC_APP_UUID            "tuyaOneUuidForOneDevice" //Unique identification of each device
+#define IPC_APP_UUID            "tuya40f8de217403ccc9" //Unique identification of each device
                                                         //Contact tuya PM/BD for developing devices or BUY more
-#define IPC_APP_AUTHKEY         "tuyaOneAuthkeyForOneUUID" //Authentication codes corresponding to UUID, one machine one code, paired with UUID. 
+#define IPC_APP_AUTHKEY         "N6YjY5v2Iyw2yJkKwXtAUGbMfiZBHsQ4" //Authentication codes corresponding to UUID, one machine one code, paired with UUID. 
 #define IPC_APP_VERSION         "1.2.3"     //Firmware version displayed on TUYA APP 
 
 IPC_MGR_INFO_S s_mgr_info;
