@@ -46,6 +46,8 @@
 
 #ifdef CONFIG_TUYA_SUPPORT
 #include "tuya.h"
+#include "tuya_func.h"
+
 #endif
 /* anyka_ipc platform version */
 #define AK_VERSION_SOFTWARE             "V1.0.43"
@@ -560,6 +562,7 @@ static void init_rtsp(void)
 #endif
 
 #ifndef CONFIG_ONVIF_SUPPORT
+#if 0
 static void init_record_file(enum dvr_file_type file_type)
 {
 	/* video replay param init */
@@ -583,7 +586,7 @@ static void init_record_file(enum dvr_file_type file_type)
 
 	ak_dvr_file_init(&file_param);
 }
-
+#endif
 static int init_flip_mirror(void)
 {
 	struct image_config *image = ak_config_get_image();
@@ -604,7 +607,7 @@ static void init_other_platform(void)
 {
 	struct camera_disp_config *camera = ak_config_get_camera_info();
 	struct sys_cloud_config *cloud = ak_config_get_sys_cloud();
-	struct video_record_config *record = ak_config_get_record();
+//	struct video_record_config *record = ak_config_get_record();
 
 	/* init video flip & mirror */
 	init_flip_mirror();
@@ -640,31 +643,34 @@ static void init_other_platform(void)
     	ak_misc_start_photosensitive_switch_ex(HARDWARE_PHOTOSENSITIVE,
 										camera->day_ctrl, auto_day_night->day_night_mode);
 	}
-
+#if 0
 	/* after init record file, you can generate record file or/and replay. */
 	//enum dvr_file_type file_type = DVR_FILE_TYPE_AVI;
 	enum dvr_file_type file_type = record->file_type;
 	init_record_file(file_type);
-
+#endif
 	/* decide what cloud we configured support */
 #ifdef CONFIG_RTSP_SUPPORT
 	if(cloud->rtsp) {
 	    init_rtsp();
 	}
 #endif
+#if 0
 
 	if (record->server_flag) {
 		/* make sure we use only one cloud platform */
 		record_ctrl_init(vi_handle, ai_handle, file_type);
 	}
-
+#endif
 #ifdef CONFIG_DANA_SUPPORT
 	if(cloud->dana){
 		ak_dana_init(vi_handle, ai_handle, ao_handle);
 	}
 #endif
+
 #ifdef CONFIG_TUYA_SUPPORT
 	if(cloud->tuya){
+		mid_plat_init(vi_handle, ai_handle, ao_handle);
 		tuya_init();
 	}
 #endif
@@ -706,7 +712,7 @@ static int init_software(void)
 		struct audio_param file_param = {AK_AUDIO_TYPE_MP3, 8000, 16, 1};
 		ak_misc_add_voice_tips("/usr/share/anyka_camera_start.mp3", &file_param);
 	}
-
+	
 #ifdef CONFIG_ONVIF_SUPPORT
 	ak_onvif_init(vi_handle, ai_handle);
 #else

@@ -21,12 +21,16 @@
 #include <net/if.h>
 #include <pthread.h>
 #include "tuya_iot_config.h"
+#include "tuya_func.h"
+
 #if defined(WIFI_GW) && (WIFI_GW==1)
 
 #include "cJSON.h"
 #include "wifi_hwl.h"
 
 #include "tuya_ipc_system_control_demo.h"
+#include "ak_config.h"
+#include "ak_cmd_exec.h"
 
 #define WLAN_DEV    "wlan0"
 
@@ -50,17 +54,24 @@ OPERATE_RET hwl_wf_station_connect(IN CONST CHAR_T *ssid,IN CONST CHAR_T *passwd
 
     if(NULL == ssid)
     {
-        //get bind info from ethernet network
-        printf("get bind info ...\n");
-    }else
-    {
-        //get bind info from ap / wifi-smart / qrcode
-        printf("get wifi info ...\n");
+        return OPRT_INVALID_PARM;
     }
 
     //TODO
-    //Add a blocking operation for the wifi connection here.
-
+    //在这里添加wifi连接的阻塞操作
+	struct sys_wifi_config * wifi_info = ak_config_get_sys_wifi();
+	strcpy(wifi_info->ssid,ssid);
+	strcpy(wifi_info->passwd,passwd);
+	ak_config_set_sys_wifi(wifi_info,1);
+	printf("-------------------------------------------------------------\n");
+	printf("-------------------------------------------------------------\n");
+	printf("-------------------------------------------------------------\n");
+	printf("-----ssid=%s---passwd=%s-----------------------------------------------------\n",ssid,passwd);
+	printf("-------------------------------------------------------------\n");
+	printf("-------------------------------------------------------------\n");
+	printf("-------------------------------------------------------------\n");
+	
+	ak_cmd_exec("/usr/sbin/wifi_manage.sh start",NULL,0);
     sleep(2);
 
     return OPRT_OK;
@@ -403,6 +414,7 @@ static void * func_Sniffer(void *pReserved)
 }
 
 static pthread_t sniffer_thId; // ID of capture thread
+static pthread_t qrcode_thId; // 二维码线程ID
 
 //Prevent duplication calling
 OPERATE_RET hwl_wf_sniffer_set(IN CONST BOOL_T en,IN CONST SNIFFER_CALLBACK cb)
@@ -411,7 +423,9 @@ OPERATE_RET hwl_wf_sniffer_set(IN CONST BOOL_T en,IN CONST SNIFFER_CALLBACK cb)
         printf("Already in status %d\r\n",en);
         return OPRT_OK;
     }
+
     s_enable_sniffer = en;
+	
     if(en == TRUE)
     {
         IPC_APP_Notify_LED_Sound_Status_CB(IPC_START_WIFI_CFG);
@@ -421,15 +435,18 @@ OPERATE_RET hwl_wf_sniffer_set(IN CONST BOOL_T en,IN CONST SNIFFER_CALLBACK cb)
 
         s_pSnifferCall = cb;
         pthread_create(&sniffer_thId, NULL, func_Sniffer, NULL);
-
+     	pthread_create(&qrcode_thId, NULL, thread_qrcode, NULL);
+		
         printf("Enable Qrcode \r\n");
     }else
     {
         printf("Disable Sniffer\r\n");
         pthread_join(sniffer_thId, NULL);
+		printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
 
         hwl_wf_wk_mode_set(WWM_STATION);
-
+		pthread_create(&qrcode_thId, NULL, func_Sniffer, NULL);
+		
         printf("Disable Qrcode\r\n");
 
         sniffer_set_done = TRUE;

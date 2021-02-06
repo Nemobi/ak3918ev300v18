@@ -42,10 +42,23 @@ stop_service()
 start_service ()
 {
 	cmd_serverd
+#TEST_MODE=0
+echo -------------------------------------------------------------------------------
+echo -------------------------------------------------------------------------------
+echo -------------------------------------------------------------------------------
+echo --TEST_MODE=$TEST_MODE-----------------------------------------------------------------------------
+echo -------------------------------------------------------------------------------
+echo -------------------------------------------------------------------------------
+echo -------------------------------------------------------------------------------
 	if [ $TEST_MODE = 0 ]; then
 		daemon 
 		/usr/sbin/anyka_ipc.sh start 
-		echo "start net service......"
+		if [ ! -f /etc/jffs2/tuya.cfgs/tuya_flip_onoff ] ; then
+			mkdir -p /etc/jffs2/tuya.cfgs/
+			echo 1 > /etc/jffs2/tuya.cfgs/tuya_flip_onoff
+		fi
+		/usr/sbin/tuya_net_manage.sh 
+		#echo "start net service......"
 	else
 		product_test & 
 		echo "start product test."
@@ -54,7 +67,7 @@ start_service ()
 	boot_from=`cat /proc/cmdline | grep nfsroot`
 	if [ -z "$boot_from" ];then
 		echo "start net service......"
-		/usr/sbin/net_manage.sh &
+	
 	else
 		echo "## start from nfsroot, do not change ipaddress!"
 	fi
@@ -71,11 +84,8 @@ restart_service ()
 #
 # main:
 #
-if test -e /etc/jffs2/danale.conf ;then
+
 	TEST_MODE=0
-else
-	TEST_MODE=1
-fi
 
 
 case "$MODE" in

@@ -14,6 +14,7 @@
 #include "tuya_ipc_doorbell_demo.h"
 #include "tuya_iot_config.h"
 #include <sys/stat.h> 
+#include "tuya_func.h"
 
 #define IPC_APP_STORAGE_PATH    "/etc/jffs2/"   //涂鸦SDK内部配置文件存放路径，要求可读写，掉电不丢失 
 #define IPC_APP_UPGRADE_FILE    "/tmp/upgrade.file" //File with path to download file during OTA
@@ -113,31 +114,6 @@ OPERATE_RET IPC_APP_Init_SDK(WIFI_INIT_MODE_E init_mode, CHAR_T *p_token)
 
 void tuya_init()
 {
-	return;
-	#if 0
-//	char uuid[24]={0};
-//	char authkey[36]={0};
-//	char pkey[20]={0};
-//	mid_net_get_tuyainfo(uuid, authkey, pkey);
-	printf("-----------------------------------------\n");
-	printf("-----------------------------------------\n");
-	printf("-----uuid=%s-uuid_len=%d-----------------------------------\n",uuid,strlen(uuid));
-	printf("-----------------------------------------\n");
-	printf("-----------------------------------------\n");
-	if(strlen(uuid)==0)
-	{
-		printf("-----------------------------------------\n");
-		printf("-----------------------------------------\n");
-		printf("-----uuid is empty------------------------------------\n");
-		printf("-----------------------------------------\n");
-		printf("-----------------------------------------\n");
-//		mid_audiofile_play(MID_AUDIO_FLASH_SN);
-		while(1)
-		{
-			sleep(1);
-		}
-	}
-	#endif
 	if(access("/etc/jffs2/tuya.cfgs",F_OK)==0)
 	{
       printf("file exist\n");
@@ -147,11 +123,11 @@ void tuya_init()
 	 	mkdir("/etc/jffs2/tuya.cfgs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	}
 	
-    CHAR_T token[30] = {0};
+   // CHAR_T token[30] = {0};
     WIFI_INIT_MODE_E mode = WIFI_INIT_AUTO;
     /* Init SDK */
-    IPC_APP_Init_SDK(mode, token);
-
+    IPC_APP_Init_SDK(mode, NULL);
+	mid_net_video_init();
 #if defined(QRCODE_ACTIVE_MODE) && (QRCODE_ACTIVE_MODE==1)
     /* demo: how to get qrcode from tuya server for display */
     sleep(2);

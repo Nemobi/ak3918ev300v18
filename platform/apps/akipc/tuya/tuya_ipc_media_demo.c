@@ -18,6 +18,11 @@
 #include "tuya_ipc_stream_storage.h"
 #include "tuya_ipc_cloud_storage.h"
 #include "tuya_ring_buffer.h"
+#include "ak_config.h"
+#include "ak_venc.h"
+#include "tuya_func.h"
+#include "ak_common.h"
+#include "ak_md.h"
 
 IPC_MEDIA_INFO_S s_media_info;
 extern CHAR_T s_raw_path[128];
@@ -176,7 +181,215 @@ int read_one_frame_from_demo_video_file(unsigned char *pVideoBuf,unsigned int of
     return 0;
 }
 
+/* ctrl handle */
+struct video_handle {
+	void *venc_handle;					//video encode handle
+	void *stream_handle;				//video stream handle
+	enum encode_group_type enc_type;	//current encode type
+};
+/* encode group define */
+typedef enum _mid_video_quality_type {
+	VDEO_QUALITY_HIGH,   	//
+	VDEO_QUALITY_MID, //
+	VDEO_QUALITY_LOW,  //
+	VDEO_QUALITY_NUM 		//total
+}mid_video_quality_type;
+
+//static int sensitivity = 50;
+struct video_handle ak_venc[ENCODE_GRP_NUM];	//handle array
+enum encode_group_type cur_grp=ENCODE_SUBCHN_NET;
+
+
+
+
+struct video_handle ak_venc[ENCODE_GRP_NUM];	//handle array
+#define E_VIDEO_SIZE_MAX 	(12)			//max group
+static int  main_index=11, sub_index=5; //global resolution index
+/* resolation define */
+struct resolution_t {
+	unsigned int width;
+	unsigned int height;
+	unsigned char str[20];
+};
+
+/* resolution assignment pool */
+static struct resolution_t resolutions[E_VIDEO_SIZE_MAX] = {
+	{176,   144,   "E_VIDEO_SIZE_QCIF"},        //0
+	{320,   180,   "E_VIDEO_SIZE_180P"},
+	{320,   240,   "E_VIDEO_SIZE_QVGA"},
+	{352,   288,   "E_VIDEO_SIZE_CIF"},
+	{640,   360,   "E_VIDEO_SIZE_360P"},
+	{640,   480,   "E_VIDEO_SIZE_VGA"},         //5
+	{720,   576,   "E_VIDEO_SIZE_PAL"},
+	{720,   480,   "E_VIDEO_SIZE_NTSC"},
+	{1280,  720,   "E_VIDEO_SIZE_720P"},
+	{1280,  800,   "E_VIDEO_SIZE_WXGA"},
+	{1280,  960,   "E_VIDEO_SIZE_960P"},        //10
+	{1920,	1080,  "E_VIDEO_SIZE_1080P"},
+};
+
+
+/* open video encode handle */
+static void *venc_demo_open_encoder(int index)
+{
+	struct encode_param param = {0};
+
+	switch (index) {
+	case 0:
+		param.width = resolutions[sub_index].width;
+		param.height = resolutions[sub_index].height;
+		param.minqp = 20;
+		param.maxqp = 51;
+		param.fps = 25;
+		param.goplen = param.fps * 2;	   //current gop is stationary
+		param.bps = 2000;				   //kbps
+		param.profile = PROFILE_MAIN;	   //main profile
+		param.use_chn = ENCODE_SUB_CHN;   //use main yuv channel data
+		param.enc_grp = ENCODE_RECORD;     //assignment from enum encode_group_type
+		param.br_mode = BR_MODE_CBR;	   //default is cbr
+		param.enc_out_type = H264_ENC_TYPE;//h.264
+		break;
+	case 1:
+		param.width = resolutions[main_index].width;
+		param.height = resolutions[main_index].height;
+		param.minqp = 20;
+		param.maxqp = 51;
+		param.fps = 10;
+		param.goplen = param.fps * 2;
+		param.bps = 500;	//kbps
+		param.profile = PROFILE_MAIN;		//same as above
+		param.use_chn = ENCODE_MAIN_CHN;
+		param.enc_grp = ENCODE_MAINCHN_NET;	//just this scope difference
+		param.br_mode = BR_MODE_CBR;
+		param.enc_out_type = H264_ENC_TYPE;
+		break;
+	case 2:
+		param.width = resolutions[sub_index].width;
+		param.height = resolutions[sub_index].height;
+		param.minqp = 20;
+		param.maxqp = 51;
+		param.fps = 10;
+		param.goplen = param.fps * 2;
+		param.bps = 300;	//kbps
+		param.profile = PROFILE_MAIN;
+		param.use_chn = ENCODE_SUB_CHN;		//use sub yuv channel data
+		param.enc_grp = ENCODE_SUBCHN_NET;	//same as above
+		param.br_mode = BR_MODE_CBR;
+		param.enc_out_type = H264_ENC_TYPE;
+		break;
+	case 3:
+		param.width = resolutions[sub_index].width;
+		param.height = resolutions[sub_index].height;
+		param.minqp = 20;
+		param.maxqp = 51;
+		param.fps = 10;
+		param.goplen = param.fps * 2;
+		param.bps = 500;	//kbps
+		param.profile = PROFILE_MAIN;
+		param.use_chn = ENCODE_SUB_CHN;
+		param.enc_grp = ENCODE_PICTURE;		//jpeg encode
+		param.br_mode = BR_MODE_CBR;
+		param.enc_out_type = MJPEG_ENC_TYPE;	//jpeg encode
+		break;
+	default:
+		return NULL;
+		break;
+	}
+
+	return ak_venc_open(&param);
+}
+
+
+void mid_net_video_init()
+{
+	int i=0;
+	
+	void *vi_handle=mid_in_get_vi_handle();
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+	printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+	
+	for(i=ENCODE_MAINCHN_NET; i<=ENCODE_SUBCHN_NET; i++)
+	{
+		struct video_handle *handle=&ak_venc[i];
+		handle->venc_handle =venc_demo_open_encoder(i);
+		if (!handle->venc_handle) {
+			ak_print_error_ex("video encode open type: %d failed\n", i);
+			return;
+		}		
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+
+		/* request stream, video encode module will start capture and encode */
+		handle->stream_handle = ak_venc_request_stream(vi_handle,
+				handle->venc_handle);
+		if (!handle->stream_handle) {
+			ak_print_error_ex("request stream failed\n");
+			return;
+		}
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+		printf("--%s:%s:%d--------------------------------------\n",__FILE__,__func__,__LINE__);
+		handle->enc_type=i;
+	}
+}
+
 void *thread_live_video(void *arg)
+{
+	struct video_stream stream = {0};
+	int ret=0;
+    MEDIA_FRAME_S h264_frame = {0};
+	
+    while(1)
+    {
+        //Note: For I frame of H264, SPS/PPS/SEI/IDR should be combined within one frame, and the NALU separator should NOT be deleted.
+      
+		ret=ak_venc_get_stream(ak_venc[ENCODE_MAINCHN_NET].stream_handle, &stream);
+		if(ret==0)
+		{
+			h264_frame.p_buf=stream.data;
+			h264_frame.size=stream.len;
+			h264_frame.type=stream.frame_type;
+			h264_frame.timestamp=stream.ts;
+			h264_frame.pts=1000000/15;
+			 TUYA_APP_Put_Frame(E_CHANNEL_VIDEO_MAIN, &h264_frame);
+			ak_venc_release_stream(ak_venc[ENCODE_MAINCHN_NET].stream_handle, &stream);
+		}
+        /* Send HD video data to the SDK */
+
+		ret=ak_venc_get_stream(ak_venc[ENCODE_SUBCHN_NET].stream_handle, &stream);
+		if(ret==0)
+		{
+			h264_frame.p_buf=stream.data;
+			h264_frame.size=stream.len;
+			h264_frame.type=stream.frame_type;
+			h264_frame.timestamp=stream.ts;
+			h264_frame.pts=1000000/15;
+			 TUYA_APP_Put_Frame(E_CHANNEL_VIDEO_SUB, &h264_frame);
+			ak_venc_release_stream(ak_venc[ENCODE_SUBCHN_NET].stream_handle, &stream);
+		}
+        /* Send SD video data to the SDK */
+
+        usleep(1000000/15);
+    }
+
+    pthread_exit(0);
+}
+
+void *thread_live_video_bak(void *arg)
 {
     char raw_fullpath[128] = {0};
    // char info_fullpath[128] = {0};
@@ -237,7 +450,6 @@ void *thread_live_video(void *arg)
 
     pthread_exit(0);
 }
-
 
 /*
 ---------------------------------------------------------------------------------

@@ -11,4 +11,9 @@ UINT_T IPC_APP_get_sd_record_mode(VOID);
 BOOL_T IPC_APP_get_alarm_function_onoff(VOID);
 BOOL_T IPC_APP_get_alarm_zone_onoff(VOID);
 char * IPC_APP_get_alarm_zone_draw(VOID);
+char * mid_get_wifiinfo_from_zbar2();
+void mid_plat_init(void *vi_handle, void * ai_handle, void * ao_handle );
+void * mid_in_get_vi_handle();
+void *thread_qrcode(void *arg);
+void mid_net_video_init();
 #endif

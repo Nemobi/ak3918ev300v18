@@ -708,6 +708,8 @@ static void init_sys_cloud_config(struct sys_cloud_config *cloud)
 
 	ak_ini_get_item_value(config.handle, "cloud", "rtsp", value);
 	cloud->rtsp = atoi(value);
+	ak_ini_get_item_value(config.handle, "cloud", "tuya", value);
+	cloud->tuya = atoi(value);
 }
 
 /**
