@@ -22,7 +22,7 @@
 #include <pthread.h>
 #include "tuya_iot_config.h"
 #include "tuya_func.h"
-
+#include "ak_common.h"
 #if defined(WIFI_GW) && (WIFI_GW==1)
 
 #include "cJSON.h"
@@ -63,16 +63,25 @@ OPERATE_RET hwl_wf_station_connect(IN CONST CHAR_T *ssid,IN CONST CHAR_T *passwd
 	strcpy(wifi_info->ssid,ssid);
 	strcpy(wifi_info->passwd,passwd);
 	ak_config_set_sys_wifi(wifi_info,1);
-	printf("-------------------------------------------------------------\n");
-	printf("-------------------------------------------------------------\n");
-	printf("-------------------------------------------------------------\n");
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
 	printf("-----ssid=%s---passwd=%s-----------------------------------------------------\n",ssid,passwd);
-	printf("-------------------------------------------------------------\n");
-	printf("-------------------------------------------------------------\n");
-	printf("-------------------------------------------------------------\n");
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+
 	
 	ak_cmd_exec("/usr/sbin/wifi_manage.sh start",NULL,0);
-    sleep(2);
+    ak_sleep_ms(15*1000);
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+	printf("-----sleep 60s-----------------------------------------------------\n");
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+
 
     return OPRT_OK;
 }
@@ -350,6 +359,7 @@ typedef struct {
 
 static volatile SNIFFER_CALLBACK s_pSnifferCall = NULL;
 static volatile BOOL_T s_enable_sniffer = FALSE;
+#if 0
 
 static void * func_Sniffer(void *pReserved)
 {
@@ -414,6 +424,7 @@ static void * func_Sniffer(void *pReserved)
 }
 
 static pthread_t sniffer_thId; // ID of capture thread
+#endif
 static pthread_t qrcode_thId; // 二维码线程ID
 
 //Prevent duplication calling
@@ -430,24 +441,24 @@ OPERATE_RET hwl_wf_sniffer_set(IN CONST BOOL_T en,IN CONST SNIFFER_CALLBACK cb)
     {
         IPC_APP_Notify_LED_Sound_Status_CB(IPC_START_WIFI_CFG);
 
-        printf("Enable Sniffer\r\n");
-        hwl_wf_wk_mode_set(WWM_SNIFFER);
+      //  printf("Enable Sniffer\r\n");
+      //  hwl_wf_wk_mode_set(WWM_SNIFFER);
 
-        s_pSnifferCall = cb;
-        pthread_create(&sniffer_thId, NULL, func_Sniffer, NULL);
+     //   s_pSnifferCall = cb;
+     //   pthread_create(&sniffer_thId, NULL, func_Sniffer, NULL);
      	pthread_create(&qrcode_thId, NULL, thread_qrcode, NULL);
 		
         printf("Enable Qrcode \r\n");
     }else
     {
-        printf("Disable Sniffer\r\n");
-        pthread_join(sniffer_thId, NULL);
-		printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+     //   printf("Disable Sniffer\r\n");
+      //  pthread_join(sniffer_thId, NULL);
+	//	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
 
         hwl_wf_wk_mode_set(WWM_STATION);
-		pthread_create(&qrcode_thId, NULL, func_Sniffer, NULL);
+	//	pthread_create(&qrcode_thId, NULL, func_Sniffer, NULL);
 		
-        printf("Disable Qrcode\r\n");
+     //   printf("Disable Qrcode\r\n");
 
         sniffer_set_done = TRUE;
     }
@@ -510,7 +521,7 @@ static OPERATE_RET hwl_get_local_ip_info(char *interface,OUT NW_IP_S *ip)
 }
 
 // if ethernet is used , replace ethernet name
-#define NET_DEV "eth0"
+#define NET_DEV "wlan0"
 
 /*
 wlan0	  Link encap:Ethernet  HWaddr 08:57:00:88:5c:16

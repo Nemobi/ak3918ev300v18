@@ -22,18 +22,15 @@ void *thread_qrcode(void *arg)
     while(s_enable_qrcode)
     {
         usleep(1000*1000);
-		printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
         char *pStr = __tuya_linux_get_snap_qrcode();
         if(pStr)
         {
-        	printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
 			printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
 			printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
             printf("get string from qrcode %s\r\n",pStr);
-            OPERATE_RET ret = tuya_ipc_direct_connect(pStr, TUYA_IPC_DIRECT_CONNECT_QRCODE);
-				printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
-			printf("-%s:%s:%d------ret=%d---------------\n",__FILE__,__func__,__LINE__,ret);
 			printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+			printf("-%s:%s:%d---------------------\n",__FILE__,__func__,__LINE__);
+            OPERATE_RET ret = tuya_ipc_direct_connect(pStr, TUYA_IPC_DIRECT_CONNECT_QRCODE);
             if(ret == OPRT_OK)
             {
                 printf("register to tuya cloud via qrcode success\r\n");

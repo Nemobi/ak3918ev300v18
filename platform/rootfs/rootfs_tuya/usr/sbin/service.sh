@@ -53,10 +53,10 @@ echo ---------------------------------------------------------------------------
 	if [ $TEST_MODE = 0 ]; then
 		daemon 
 		/usr/sbin/anyka_ipc.sh start 
-		if [ ! -f /etc/jffs2/tuya.cfgs/tuya_flip_onoff ] ; then
-			mkdir -p /etc/jffs2/tuya.cfgs/
-			echo 1 > /etc/jffs2/tuya.cfgs/tuya_flip_onoff
-		fi
+		#if [ ! -f /etc/jffs2/tuya.cfgs/tuya_flip_onoff ] ; then
+		#	mkdir -p /etc/jffs2/tuya.cfgs/
+		#	echo 1 > /etc/jffs2/tuya.cfgs/tuya_flip_onoff
+		#fi
 		/usr/sbin/tuya_net_manage.sh 
 		#echo "start net service......"
 	else

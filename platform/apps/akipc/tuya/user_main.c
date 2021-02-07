@@ -19,11 +19,11 @@
 #define IPC_APP_STORAGE_PATH    "/etc/jffs2/"   //涂鸦SDK内部配置文件存放路径，要求可读写，掉电不丢失 
 #define IPC_APP_UPGRADE_FILE    "/tmp/upgrade.file" //File with path to download file during OTA
 #define IPC_APP_SD_BASE_PATH    "/mnt/sdcard/"      //SD card mount directory
-#define IPC_APP_PID             "qqobnsd9eawddwvs"  //Product ID of TUYA device, this is for demo only.
+#define IPC_APP_PID             "z53cbpngf4vtni0j"  //Product ID of TUYA device, this is for demo only.
                                                      //Contact tuya PM/BD for official pid.
-#define IPC_APP_UUID            "tuya40f8de217403ccc9" //Unique identification of each device
+#define IPC_APP_UUID            "tuya4adf68c6d37ec264" //Unique identification of each device
                                                         //Contact tuya PM/BD for developing devices or BUY more
-#define IPC_APP_AUTHKEY         "N6YjY5v2Iyw2yJkKwXtAUGbMfiZBHsQ4" //Authentication codes corresponding to UUID, one machine one code, paired with UUID. 
+#define IPC_APP_AUTHKEY         "HhZ8uYw8Hg0faDjmeaoJiOYYmg6fZYfh" //Authentication codes corresponding to UUID, one machine one code, paired with UUID. 
 #define IPC_APP_VERSION         "1.2.3"     //Firmware version displayed on TUYA APP 
 
 IPC_MGR_INFO_S s_mgr_info;
@@ -58,8 +58,9 @@ STATIC VOID __IPC_APP_Get_Net_Status_cb(IN CONST BYTE_T stat)
 
 OPERATE_RET IPC_APP_Init_SDK(WIFI_INIT_MODE_E init_mode, CHAR_T *p_token)
 {
+	tuya_ipc_set_log_attr(5,"/tmp/log.txt");
     PR_DEBUG("SDK Version:%s\r\n", tuya_ipc_get_sdk_info());
-
+	int ret=-1;
     memset(&s_mgr_info, 0, sizeof(IPC_MGR_INFO_S));
     strcpy(s_mgr_info.storage_path, IPC_APP_STORAGE_PATH);
     strcpy(s_mgr_info.upgrade_file_path, IPC_APP_UPGRADE_FILE);
@@ -101,7 +102,8 @@ OPERATE_RET IPC_APP_Init_SDK(WIFI_INIT_MODE_E init_mode, CHAR_T *p_token)
     env.gw_rst_cb = IPC_APP_Reset_System_CB;
     env.gw_restart_cb = IPC_APP_Restart_Process_CB;
     env.mem_save_mode = FALSE;
-    tuya_ipc_init_sdk(&env);
+    ret=tuya_ipc_init_sdk(&env);
+	printf("-------%s:%s:%d---tuya_ipc_init_sdk ret=%d---------------------------\n",__FILE__,__func__,__LINE__,ret);
 #if defined(QRCODE_ACTIVE_MODE) && (QRCODE_ACTIVE_MODE==1)
     tuya_ipc_set_region(REGION_CN);
     p_token = NULL;
@@ -114,15 +116,7 @@ OPERATE_RET IPC_APP_Init_SDK(WIFI_INIT_MODE_E init_mode, CHAR_T *p_token)
 
 void tuya_init()
 {
-	if(access("/etc/jffs2/tuya.cfgs",F_OK)==0)
-	{
-      printf("file exist\n");
-	}
-	else
-	{
-	 	mkdir("/etc/jffs2/tuya.cfgs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	}
-	
+
    // CHAR_T token[30] = {0};
     WIFI_INIT_MODE_E mode = WIFI_INIT_AUTO;
     /* Init SDK */
