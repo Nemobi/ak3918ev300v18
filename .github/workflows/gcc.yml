@@ -14,7 +14,7 @@ jobs:
         image: nemobi/arm-anykav200-crosstool
         env:
           CROSS_COMPILE: "arm-anykav200-linux-uclibcgnueabi-"
-          PATH: "$PATH:/opt/arm-anykav200-crosstool/usr/bin"
+          #PATH: "$PATH:/opt/arm-anykav200-crosstool/usr/bin"
         volumes:
           - /src:/src
     steps:
