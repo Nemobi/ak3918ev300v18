@@ -5,17 +5,18 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  workflow_dispatch:
-    branches:
-      - master
+  workflow_dispatch:    
 
 jobs:
-  build:
-
+  run_in_container:    
     runs-on: ubuntu-latest
-
+    container:
+        image: nemobi/arm-anykav200-crosstool
+        env:
+          CROSS_COMPILE: "arm-anykav200-linux-uclibcgnueabi-"
+          PATH: "$PATH:/opt/arm-anykav200-crosstool/usr/bin"
+        volumes:
+          - /src:/src
     steps:
-    - uses: actions/checkout@v3
-    - name: make
-      run: make
-  
+      - uses: actions/checkout@v3
+        name: Checkout repo
